@@ -1,4 +1,4 @@
-name: SMA Screener Bot
+name: SMA Screener 1d
 
 on:
   schedule:
