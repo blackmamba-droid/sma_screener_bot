@@ -25,6 +25,6 @@ jobs:
 
       - name: Run screener
         env:
-          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          DISCORD_WEBHOOK_URL_1D: ${{ secrets.DISCORD_WEBHOOK_URL_1D }}
         run: |
           python main.py

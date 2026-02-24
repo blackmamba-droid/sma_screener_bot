@@ -515,9 +515,9 @@ def format_discord_message(df: pd.DataFrame) -> str:
 # =====================================================
 
 def post_to_discord(content: str):
-    webhook_url = os.environ.get("DISCORD_WEBHOOK_URL_1D") or os.environ.get("DISCORD_WEBHOOK_URL")
+    webhook_url = os.environ.get("DISCORD_WEBHOOK_URL_1D")
     if not webhook_url:
-        raise RuntimeError("DISCORD_WEBHOOK_URL_1D / DISCORD_WEBHOOK_URL not set")
+        raise RuntimeError("DISCORD_WEBHOOK_URL_1D")
     resp = requests.post(webhook_url, json={"content": content})
     resp.raise_for_status()
 
