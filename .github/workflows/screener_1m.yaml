@@ -1,0 +1,30 @@
+name: SMA Screener 1m
+
+on:
+  schedule:
+    - cron: "0 8-21 * * 1-5"   # jede volle Stunde, Mo–Fr, 08–21 UTC (09–22 CET)
+  workflow_dispatch:
+
+jobs:
+  run-screener-1m:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Run 1m screener
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          python main_1m.py
