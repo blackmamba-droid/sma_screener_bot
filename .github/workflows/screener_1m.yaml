@@ -1,8 +1,8 @@
 name: SMA Screener 1m
 
 on:
-  schedule:
-    - cron: "0 8-21 * * 1-5"   # jede volle Stunde, Mo–Fr, 08–21 UTC (09–22 CET)
+  #schedule:
+   # - cron: "0 8-21 * * 1-5"   # jede volle Stunde, Mo–Fr, 08–21 UTC (09–22 CET)
   workflow_dispatch:
 
 jobs:
