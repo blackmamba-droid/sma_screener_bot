@@ -15,16 +15,18 @@ logging.getLogger("yfinance").setLevel(logging.CRITICAL)
 UNIVERSE_US   = "US"
 UNIVERSE_DE   = "DE"
 UNIVERSE_ASIA = "ASIA"
+UNIVERSE_R2K = "R2K"
+
 
 # =====================================================
 # Einstellungen
 # =====================================================
 
 HISTORY_PERIOD = "2y"
-INTERVAL       = "1d"
+INTERVAL       = "4h"
 MA_TYPE        = "SMA"
 MA_LENGTH      = 50
-MIN_BARS       = 80
+MIN_BARS       = 100
 NEAR_PCT       = 1.0   # Near Touch Schwelle in %
 
 # =====================================================
@@ -72,6 +74,20 @@ def get_nasdaq100_tickers():
         return []
     col = "Ticker" if "Ticker" in df.columns else df.columns[0]
     return df[col].astype(str).tolist()
+
+def get_russell2000_tickers():
+    try:
+        df = pd.read_csv("russell2000.csv")
+    except Exception as e:
+        print(f"[WARN] russell2000.csv nicht geladen: {e}")
+        return []
+    if "Symbol" not in df.columns:
+        print("[WARN] Spalte 'Symbol' fehlt in russell2000.csv")
+        return []
+    tickers = df["Symbol"].dropna().astype(str).tolist()
+    tickers = [t.replace(".", "-") for t in tickers]
+    return tickers
+
 
 
 def get_dax40_tickers():
@@ -310,19 +326,25 @@ def build_universes():
     tickers_us   = set(get_sp500_tickers())   | set(get_nasdaq100_tickers())
     tickers_de   = set(get_dax40_tickers())   | set(get_mdax_tickers()) | set(get_tecdax_tickers())
     tickers_asia = set(get_nifty500_tickers()) | set(get_nikkei225_tickers()) | set(get_hscei_tickers())
+    tickers_r2k = set(get_russell2000_tickers())
 
     print(f"US:   {len(tickers_us)} Ticker")
     print(f"DE:   {len(tickers_de)} Ticker")
     print(f"ASIA: {len(tickers_asia)} Ticker")
+    print(f"R2K: {len(tickers_r2k)} Ticker")
 
-    universe_map: dict[str, str] = {}
+    """ universe_map: dict[str, str] = {}
 
     for t in tickers_us:
         universe_map[t] = UNIVERSE_US
     for t in tickers_de:
         universe_map[t] = UNIVERSE_DE
     for t in tickers_asia:
-        universe_map[t] = UNIVERSE_ASIA
+        universe_map[t] = UNIVERSE_ASIA """
+
+    universe_map: dict[str, str] = {}
+    for t in tickers_r2k:
+        universe_map[t] = UNIVERSE_R2K
 
     return universe_map  # {ticker: "US"/"DE"/"ASIA"}
 
@@ -472,9 +494,10 @@ def format_discord_message(df: pd.DataFrame) -> str:
     parts = []
 
     universe_titles = [
-        (UNIVERSE_US,   "US"),
-        (UNIVERSE_DE,   "DE"),
-        (UNIVERSE_ASIA, "ASIA"),
+        (UNIVERSE_R2K, "Russell2000")
+        #(UNIVERSE_US,   "US"),
+        #(UNIVERSE_DE,   "DE"),
+        #(UNIVERSE_ASIA, "ASIA"),
     ]
 
     for uni, title in universe_titles:
@@ -503,9 +526,6 @@ def format_discord_message(df: pd.DataFrame) -> str:
         return f"SMA{MA_LENGTH} Screener: Keine Ergebnisse."
 
     message = "\n\n".join(parts)
-
-    if len(message) > 1900:
-        message = message[:1850] + "\n... (gekürzt)"
 
     return message
 

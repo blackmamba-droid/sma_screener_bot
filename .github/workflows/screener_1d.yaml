@@ -2,7 +2,7 @@ name: SMA Screener 1d
 
 on:
   schedule:
-    - cron: "0 21 * * 1-5"  # einmal täglich um 21:00 UTC (22:00 CET), Mo–Fr
+    - cron: "0 0,4,8,12,16,20 * * 1-5"  # einmal täglich um 21:00 UTC (22:00 CET), Mo–Fr
   workflow_dispatch:       # manuelles Triggern aus der UI
 
 jobs:
@@ -28,3 +28,6 @@ jobs:
           DISCORD_WEBHOOK_URL_1D: ${{ secrets.DISCORD_WEBHOOK_URL_1D }}
         run: |
           python main.py
+
+
+# activate venv source /Users/mikahentschel/crypto_runner_screener/venv/bin/activate
